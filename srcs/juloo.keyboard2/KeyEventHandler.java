@@ -104,6 +104,7 @@ public final class KeyEventHandler
   {
     if (key == null)
       return;
+    _recv.before_key_up(key);
     _next_last_action = LastAction.OTHER;
     Pointers.Modifiers old_mods = _mods;
     update_meta_state(mods);
@@ -594,6 +595,8 @@ public final class KeyEventHandler
     public void selection_state_changed(boolean selection_is_ongoing);
     public InputConnection getCurrentInputConnection();
     public Handler getHandler();
+    /** Called before a key is handled. */
+    public void before_key_up(KeyValue key);
   }
 
   class Autocapitalisation_callback implements Autocapitalisation.Callback

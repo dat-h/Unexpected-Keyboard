@@ -4,6 +4,8 @@
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <!-- Built-in voice typing -->
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
   <application android:label="@string/app_name" android:allowBackup="true" android:icon="@mipmap/ic_launcher" android:hardwareAccelerated="false">
     <service android:name="juloo.keyboard2.Keyboard2" android:label="@string/app_name" android:permission="android.permission.BIND_INPUT_METHOD" android:exported="true" android:directBootAware="true">
@@ -31,10 +33,14 @@
         <action android:name="android.intent.action.MAIN"/>
       </intent-filter>
     </activity>
+    <activity android:name="juloo.keyboard2.VoicePermissionActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:exported="false" android:excludeFromRecents="true" android:noHistory="true"/>
   </application>
 
   <!-- To query enabled input methods for voice IME detection -->
   <queries>
+    <intent>
+      <action android:name="android.speech.RecognitionService" />
+    </intent>
     <intent>
       <action android:name="android.view.InputMethod" />
     </intent>

@@ -154,6 +154,15 @@
     <string name="clipboard_remove_confirm">Remove this clipboard item?</string>
     <string name="clipboard_remove_confirmed">Yes</string>
     <string name="toast_no_voice_input">No voice typing app installed</string>
+    <string name="voice_status_starting">Starting…</string>
+    <string name="voice_status_listening">Listening… tap to stop</string>
+    <string name="voice_status_processing">Processing…</string>
+    <string name="voice_error_no_match">Didn\'t catch that</string>
+    <string name="voice_error_network">Voice typing: network error</string>
+    <string name="voice_error_generic">Voice typing error</string>
+    <string name="voice_permission_granted">Microphone access granted. Tap the mic key again to start voice typing.</string>
+    <string name="voice_permission_denied">Microphone access is needed for voice typing</string>
+    <string name="voice_permission_denied_settings">Enable the microphone permission to use voice typing</string>
     <string name="pref_category_clipboard">Clipboard</string>
     <string name="pref_clipboard_history_duration">Clipboard memory duration</string>
     <string name="pref_clipboard_history_duration_1">At most 1 minute</string>
