@@ -23,9 +23,9 @@ public final class VoiceInput implements RecognitionListener
   public interface Callback
   {
     InputConnection getCurrentInputConnection();
-    /** [listening] is false when voice input has ended. [level] is in [0, 1]
-        and is meaningful only while listening. */
-    void voice_status_changed(boolean listening, String status, float level);
+    /** [listening] is false once the user asked to stop or voice input has
+        ended. [error] is a message to show to the user or [null]. */
+    void voice_status_changed(boolean listening, String error);
   }
 
   final Context _ctx;
@@ -100,7 +100,7 @@ public final class VoiceInput implements RecognitionListener
       return;
     _stopping = true;
     _recognizer.stopListening();
-    status(str(R.string.voice_status_processing), 0.f);
+    _callback.voice_status_changed(false, null);
   }
 
   /** Stop immediately, keeping the partial text that is already shown. */
@@ -146,22 +146,17 @@ public final class VoiceInput implements RecognitionListener
     intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
     intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
         _ctx.getPackageName());
-    status(str(R.string.voice_status_starting), 0.f);
+    _callback.voice_status_changed(true, null);
     _recognizer.startListening(intent);
   }
 
-  void end_session(String message)
+  void end_session(String error)
   {
     _active = false;
     _stopping = false;
     _segment_prefix = null;
     _composing = false;
-    _callback.voice_status_changed(false, message, 0.f);
-  }
-
-  void status(String s, float level)
-  {
-    _callback.voice_status_changed(true, s, level);
+    _callback.voice_status_changed(false, error);
   }
 
   String str(int id) { return _ctx.getResources().getString(id); }
@@ -220,34 +215,19 @@ public final class VoiceInput implements RecognitionListener
   // RecognitionListener
 
   @Override
-  public void onReadyForSpeech(Bundle params)
-  {
-    if (_active && !_stopping)
-      status(str(R.string.voice_status_listening), 0.f);
-  }
+  public void onReadyForSpeech(Bundle params) {}
 
   @Override
   public void onBeginningOfSpeech() {}
 
   @Override
-  public void onRmsChanged(float rmsdB)
-  {
-    if (!_active || _stopping)
-      return;
-    // rmsdB typically ranges from -2 to 10.
-    float level = Math.max(0.f, Math.min(1.f, (rmsdB + 2.f) / 12.f));
-    status(str(R.string.voice_status_listening), level);
-  }
+  public void onRmsChanged(float rmsdB) {}
 
   @Override
   public void onBufferReceived(byte[] buffer) {}
 
   @Override
-  public void onEndOfSpeech()
-  {
-    if (_active)
-      status(str(R.string.voice_status_processing), 0.f);
-  }
+  public void onEndOfSpeech() {}
 
   @Override
   public void onPartialResults(Bundle partial)

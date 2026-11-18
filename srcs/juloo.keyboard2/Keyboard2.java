@@ -19,7 +19,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -42,9 +41,6 @@ public class Keyboard2 extends InputMethodService
   private ViewGroup _keyboard_container_view;
   private Keyboard2View _keyboard_layout_view;
   private CandidatesView _candidates_view;
-  private View _voice_bar;
-  private TextView _voice_status;
-  private TextView _voice_level;
   private VoiceInput _voice_input;
   private Suggestions _suggestions;
   private KeyEventHandler _keyeventhandler;
@@ -170,12 +166,6 @@ public class Keyboard2 extends InputMethodService
     _keyboard_container_view = (ViewGroup)inflate_view(R.layout.keyboard);
     _keyboard_layout_view = (Keyboard2View)_keyboard_container_view.findViewById(R.id.keyboard_view);
     _candidates_view = (CandidatesView)_keyboard_container_view.findViewById(R.id.candidates_view);
-    _voice_bar = _keyboard_container_view.findViewById(R.id.voice_bar);
-    _voice_status = (TextView)_keyboard_container_view.findViewById(R.id.voice_status);
-    _voice_level = (TextView)_keyboard_container_view.findViewById(R.id.voice_level);
-    _voice_bar.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) { if (_voice_input != null) _voice_input.stop(); }
-    });
   }
 
   VoiceInput get_voice_input()
@@ -187,33 +177,14 @@ public class Keyboard2 extends InputMethodService
           return Keyboard2.this.getCurrentInputConnection();
         }
 
-        public void voice_status_changed(boolean listening, String status, float level)
+        public void voice_status_changed(boolean listening, String error)
         {
-          show_voice_status(listening, status, level);
+          _keyboard_layout_view.set_voice_listening(listening);
+          if (error != null)
+            Toast.makeText(Keyboard2.this, error, Toast.LENGTH_SHORT).show();
         }
       });
     return _voice_input;
-  }
-
-  void show_voice_status(boolean listening, String status, float level)
-  {
-    if (listening)
-    {
-      _voice_status.setText(status);
-      // Pulse the indicator with the input volume.
-      float scale = 0.7f + 0.8f * level;
-      _voice_level.setScaleX(scale);
-      _voice_level.setScaleY(scale);
-      _voice_bar.setVisibility(View.VISIBLE);
-      _candidates_view.setVisibility(View.GONE);
-    }
-    else
-    {
-      _voice_bar.setVisibility(View.GONE);
-      refresh_candidates_view();
-      if (status != null)
-        Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
-    }
   }
 
   /** Stop voice input, keeping the text dictated so far. */
@@ -276,8 +247,6 @@ public class Keyboard2 extends InputMethodService
       _candidates_view.refresh_config(_config);
       _keyeventhandler.dictionary_changed();
     }
-    if (_voice_input != null && _voice_input.is_active())
-      should_show = false;
     _candidates_view.setVisibility(should_show ? View.VISIBLE : View.GONE);
   }
 

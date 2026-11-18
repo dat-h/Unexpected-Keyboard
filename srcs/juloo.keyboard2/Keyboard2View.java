@@ -36,6 +36,9 @@ public class Keyboard2View extends View
 
   private Pointers.Modifiers _mods;
 
+  /** Whether voice typing is listening. Changes the color of the voice key. */
+  private boolean _voice_listening = false;
+
   private static int _currentWhat = 0;
 
   private Config _config;
@@ -147,6 +150,15 @@ public class Keyboard2View extends View
     if (_config.editor_config.selection_mode_enabled)
       set_fake_ptr_latched(KeyboardData.Key.EMPTY,
           KeyValue.SELECTION_MODE, selection_state, true);
+  }
+
+  /** Called from [Keyboard2] when voice typing starts or stops listening. */
+  public void set_voice_listening(boolean listening)
+  {
+    if (_voice_listening == listening)
+      return;
+    _voice_listening = listening;
+    invalidate();
   }
 
   public KeyValue modifyKey(KeyValue k, Pointers.Modifiers mods)
@@ -429,6 +441,9 @@ public class Keyboard2View extends View
 
   private int labelColor(KeyValue k, boolean isKeyDown, boolean sublabel)
   {
+    if (_voice_listening && k.getKind() == KeyValue.Kind.Event
+        && k.getEvent() == KeyValue.Event.SWITCH_VOICE_TYPING)
+      return _theme.voiceListeningColor;
     if (isKeyDown)
     {
       int flags = _pointers.getKeyFlags(k);

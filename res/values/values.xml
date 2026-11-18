@@ -14,6 +14,8 @@
   <dimen name="dictionary_download_item_width">40dp</dimen>
   <!-- Will be overwritten automatically by Gradle for the debug build variant -->
   <bool name="debug_logs">false</bool>
+  <!-- Voice typing key while listening, in every theme. -->
+  <color name="voice_listening">#2196f3</color>
   <!-- Color fallback for the Monet themes on Android API < 31. This makes the
        Monet themes very similar to the "Dark" and "Light" themes. -->
   <color name="system_accent1_400">#3399ff</color>
